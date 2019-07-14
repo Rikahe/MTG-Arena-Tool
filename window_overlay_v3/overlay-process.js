@@ -62,6 +62,7 @@ class OverlayProcess {
     let nameMatch =
       win.title == "MTGA" ||
       win.title == "MTG Arena Tool" ||
+      win.title == "WineDesktop - Wine desktop" ||
       win.owner.name.indexOf("electron") !== -1;
 
     if ((nameMatch && !this.show) || this.editMode) {
@@ -91,6 +92,7 @@ class OverlayProcess {
   }
 
   hideWindow() {
+    console.log('overlay: hide')
     this.show = false;
     this.window.setSize(5, 5);
     this.window.setPosition(-10, -10);
