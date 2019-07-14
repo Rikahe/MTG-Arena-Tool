@@ -944,12 +944,12 @@ function createEconomyUI(mainDiv) {
   div.appendChild(ntx);
 
   const masteryLevel = pd.economy.currentLevel + 1;
-  const iclvl = createDiv(["economy_sub"], "ML" + masteryLevel, {
-    title: `Mastery Level ${masteryLevel} (${pd.economy.trackName})`
-  });
-  iclvl.style.marginLeft = "24px";
-  iclvl.style.lineHeight = "64px";
+  const iclvl = createDiv(["economy_mastery_med"]);
+  iclvl.title = `Mastery Level (${pd.economy.trackName})`;
   div.appendChild(iclvl);
+  ntx = tx.cloneNode(true);
+  ntx.innerHTML = formatNumber(masteryLevel);
+  div.appendChild(ntx);
 
   const icxp = createDiv(["economy_exp"], "", { title: "Experience" });
   icxp.style.marginLeft = "24px";

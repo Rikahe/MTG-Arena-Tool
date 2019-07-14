@@ -1637,6 +1637,16 @@ a:hover {
     background-size: contain;
 }
 
+.economy_mastery_med {
+  background-repeat: no-repeat;
+  margin: auto 4px;
+  margin-left: 16px;
+  width: 28px;
+  height: 28px;
+  background-image: url(../images/mastery.png);
+  background-size: contain;
+}
+
 .economy_vault {
     background-repeat: no-repeat;
     margin: auto 4px;
