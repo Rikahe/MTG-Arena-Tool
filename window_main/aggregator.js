@@ -1,4 +1,11 @@
-const { COLORS_ALL, COLORS_BRIEF } = require("../shared/constants");
+const {
+  COLORS_ALL,
+  COLORS_BRIEF,
+  DATE_ALL_TIME,
+  DATE_LAST_30,
+  DATE_LAST_DAY,
+  DATE_SEASON
+} = require("../shared/constants");
 const db = require("../shared/database");
 const pd = require("../shared/player-data");
 const {
@@ -27,17 +34,9 @@ const SINGLE_MATCH_EVENTS = [
   "Ladder",
   "Traditional_Ladder"
 ];
-// Date constants
-const DATE_LAST_30 = "Last 30 Days";
-const DATE_SEASON = "Current Season";
-const DATE_ALL_TIME = "All Time";
-
-const now = new Date();
-const then = new Date();
-then.setDate(now.getDate() - 30);
-const DAYS_AGO_30 = then.toISOString();
-
 const CONSTRUCTED_EVENTS = ["Ladder", "Traditional_Ladder"];
+// Archetype constants
+const NO_ARCH = "No Archetype";
 
 class Aggregator {
   constructor(filters) {
@@ -65,10 +64,6 @@ class Aggregator {
     stats.winrate = winrate;
   }
 
-  static createAllMatches() {
-    return new Aggregator({ date: DATE_ALL_TIME });
-  }
-
   static getDefaultColorFilter() {
     const colorFilters = {};
     COLORS_BRIEF.forEach(code => (colorFilters[code] = false));
@@ -84,7 +79,7 @@ class Aggregator {
       onlyCurrentDecks: false,
       arch: DEFAULT_ARCH,
       oppColors: Aggregator.getDefaultColorFilter(),
-      date: DATE_LAST_30,
+      date: pd.settings.last_date_filter,
       showArchived: false
     };
   }
@@ -123,10 +118,17 @@ class Aggregator {
   filterDate(_date) {
     const { date } = this.filters;
     let dateFilter = null;
+    const now = new Date();
     if (date === DATE_SEASON) {
       dateFilter = db.season_starts;
     } else if (date === DATE_LAST_30) {
-      dateFilter = DAYS_AGO_30;
+      const then = new Date();
+      then.setDate(now.getDate() - 30);
+      dateFilter = then.toISOString();
+    } else if (date === DATE_LAST_DAY) {
+      const then = new Date();
+      then.setDate(now.getDate() - 1);
+      dateFilter = then.toISOString();
     } else {
       dateFilter = date;
     }
@@ -222,15 +224,23 @@ class Aggregator {
     const passesPlayerDeckFilter = this.filterDeck(match.playerDeck);
     if (!passesPlayerDeckFilter) return false;
 
+    if (
+      match.type === "draft" &&
+      (arch !== DEFAULT_ARCH || Object.values(oppColors).some(color => color))
+    )
+      return false;
+
     const passesOppDeckFilter = this._filterDeckByColors(
       match.oppDeck,
       oppColors
     );
     if (!passesOppDeckFilter) return false;
 
-    const matchTags = match.tags || ["Unknown"];
     const passesArchFilter =
-      arch === DEFAULT_ARCH || (matchTags.length && arch === matchTags[0]);
+      arch === DEFAULT_ARCH ||
+      (match.tags && match.tags.length && arch === match.tags[0]) ||
+      ((!match.tags || !match.tags.length || !match.tags[0]) &&
+        arch === NO_ARCH);
     if (!passesArchFilter) return false;
 
     return this.filterDate(match.date);
@@ -277,9 +287,11 @@ class Aggregator {
     this._eventIds = [...Object.keys(this.eventLastPlayed)];
     this._eventIds.sort(this.compareEvents);
 
-    const archList = [...Object.keys(this.archCounts)];
+    const archList = Object.keys(this.archCounts).filter(
+      arch => arch !== NO_ARCH
+    );
     archList.sort();
-    this.archs = [DEFAULT_ARCH, ...archList];
+    this.archs = [DEFAULT_ARCH, NO_ARCH, ...archList];
 
     for (const deckId in this.deckMap) {
       const deck = pd.deck(deckId) || this.deckMap[deckId];
@@ -368,18 +380,22 @@ class Aggregator {
         statsToUpdate.push(this.colorStats[colors]);
       }
       // process archetype
-      if (match.tags && match.tags.length) {
-        const tag = match.tags[0] || "Unknown";
-        this.archCounts[tag] = (this.archCounts[tag] || 0) + 1;
-        if (!(tag in this.tagStats)) {
-          this.tagStats[tag] = {
-            ...Aggregator.getDefaultStats(),
-            colors,
-            tag
-          };
-        }
-        statsToUpdate.push(this.tagStats[tag]);
+      const tag =
+        match.tags && match.tags.length ? match.tags[0] || NO_ARCH : NO_ARCH;
+      this.archCounts[tag] = (this.archCounts[tag] || 0) + 1;
+      if (!(tag in this.tagStats)) {
+        this.tagStats[tag] = {
+          ...Aggregator.getDefaultStats(),
+          colors,
+          tag
+        };
+      } else {
+        this.tagStats[tag].colors = [
+          ...new Set([...this.tagStats[tag].colors, ...colors])
+        ];
       }
+      if (!statsToUpdate.includes(this.tagStats[tag]))
+        statsToUpdate.push(this.tagStats[tag]);
     }
     // update relevant stats
     statsToUpdate.forEach(stats => {
@@ -478,8 +494,6 @@ Aggregator.RANKED_DRAFT = RANKED_DRAFT;
 Aggregator.ALL_DRAFTS = ALL_DRAFTS;
 Aggregator.DRAFT_REPLAYS = DRAFT_REPLAYS;
 Aggregator.ALL_EVENT_TRACKS = ALL_EVENT_TRACKS;
-Aggregator.DATE_LAST_30 = DATE_LAST_30;
-Aggregator.DATE_SEASON = DATE_SEASON;
-Aggregator.DATE_ALL_TIME = DATE_ALL_TIME;
+Aggregator.NO_ARCH = NO_ARCH;
 
 module.exports = Aggregator;

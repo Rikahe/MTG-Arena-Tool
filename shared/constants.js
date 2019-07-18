@@ -713,3 +713,9 @@ exports.MAIN_ECONOMY = 4;
 exports.MAIN_COLLECTION = 5;
 exports.MAIN_SETTINGS = 6;
 exports.MAIN_UPDATE = 9;
+
+// Date constants
+exports.DATE_LAST_DAY = "Last 24 Hours";
+exports.DATE_LAST_30 = "Last 30 Days";
+exports.DATE_SEASON = "Current Season";
+exports.DATE_ALL_TIME = "All Time";

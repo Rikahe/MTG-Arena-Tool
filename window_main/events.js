@@ -37,7 +37,7 @@ function openEventsTab(_filters, dataIndex = 25, scrollTop = 0) {
 
   sortedEvents = [...pd.eventList];
   sortedEvents.sort(compare_courses);
-  filters = { ...filters, ..._filters };
+  filters = { ...filters, date: pd.settings.last_date_filter, ..._filters };
   filteredMatches = new Aggregator(filters);
 
   const eventsTop = createDiv(["events_top"]);
@@ -50,7 +50,7 @@ function openEventsTab(_filters, dataIndex = 25, scrollTop = 0) {
     "events_top",
     selected => openEventsTab(selected),
     filters,
-    getLocalState().totalAgg.trackEvents,
+    new Aggregator({ date: filters.date }).trackEvents,
     [],
     [],
     false,

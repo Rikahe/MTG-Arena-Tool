@@ -17,13 +17,13 @@ const {
 } = require("../shared/util");
 const pd = require("../shared/player-data");
 
+const Aggregator = require("./aggregator");
 const FilterPanel = require("./filter-panel");
 const {
   pop,
   changeBackground,
   drawDeck,
   drawDeckVisual,
-  getLocalState,
   ipcSend
 } = require("./renderer-util");
 
@@ -204,7 +204,8 @@ function showTournamentRegister(mainDiv, tou) {
     const validDecks = pd.deckList
       .filter(deck => !deck.custom)
       .filter(deck => getBoosterCountEstimate(get_deck_missing(deck)) === 0);
-    validDecks.sort(getLocalState().totalAgg.compareDecks);
+
+    validDecks.sort(new Aggregator({ onlyCurrentDecks: true }).compareDecks);
     // hack to make pretty deck names
     // TODO move getDeckString out of FilterPanel
     const filterPanel = new FilterPanel("unused", null, {}, [], [], validDecks);

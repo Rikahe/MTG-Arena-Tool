@@ -13,6 +13,9 @@ You can find all stable and pre-production releases [right here on GitHub](https
 
 Once downloaded the installer should simply install and run immediately. The app will read your user data and warn you if anything goes wrong.
 
+### Linux/Gnome users
+After Gnome 3.26, legacy tray icons were deprecated, so users will need to install `libindicator-gtk3` to see the icon again. (packages are available in all managers)
+
 ### Source
 If you would like to compile and run the latest source, see [the contribution guidelines on how to set up your machine.](./CONTRIBUTING.md#set-up-your-machine)
 

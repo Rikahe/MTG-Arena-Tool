@@ -26,8 +26,8 @@ console.log(process.platform);
 const debugBack = false;
 const debugIPC = false;
 
-var mainWindow;
-var background;
+var mainWindow = null;
+var background = null;
 var overlays = [];
 var mainTimeout = null;
 
@@ -343,7 +343,7 @@ function toggleWindow() {
 function showWindow() {
   if (mainWindow) {
     if (!mainWindow.isVisible()) mainWindow.show();
-    mainWindow.moveTop();
+    else mainWindow.moveTop();
   }
 }
 
@@ -398,10 +398,14 @@ function createMainWindow() {
   win.loadURL(`file://${__dirname}/window_main/index.html`);
   win.on("closed", onClosed);
 
-  let iconPath = path.join(__dirname, "icon-tray.png");
+  let iconPath = path.join(__dirname, "icon-tray@8x.png");
   if (process.platform == "win32") {
     iconPath = path.join(__dirname, "icon.ico");
   }
+  if (process.platform == "darwin") {
+    let iconPath = path.join(__dirname, "icon-tray.png");
+  }
+
   tray = new Tray(iconPath);
 
   const contextMenu = Menu.buildFromTemplate([

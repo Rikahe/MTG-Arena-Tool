@@ -45,7 +45,7 @@ function setFilters(selected = {}) {
     };
   } else {
     // default case
-    filters = { ...filters, ...selected };
+    filters = { ...filters, date: pd.settings.last_date_filter, ...selected };
   }
 }
 
@@ -96,7 +96,7 @@ function openDecksTab(_filters = {}, scrollTop = 0) {
     "decks_top",
     selected => openDecksTab(selected),
     filters,
-    ls.totalAgg.events,
+    new Aggregator({ date: filters.date }).events,
     tags,
     [],
     true,

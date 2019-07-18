@@ -36,10 +36,18 @@ const {
 const { openMatch } = require("./match-details");
 
 const byId = id => document.getElementById(id);
-const { DEFAULT_DECK, RANKED_CONST, RANKED_DRAFT, DATE_SEASON } = Aggregator;
+const {
+  DEFAULT_DECK,
+  DEFAULT_ARCH,
+  NO_ARCH,
+  RANKED_CONST,
+  RANKED_DRAFT,
+  DATE_SEASON
+} = Aggregator;
 let filters = Aggregator.getDefaultFilters();
 let filteredMatches;
 let sortedHistory;
+let totalAgg;
 const tagPrompt = "Set archetype";
 
 function getNextRank(currentRank) {
@@ -70,7 +78,7 @@ function setFilters(selected = {}) {
     };
   } else {
     // default case
-    filters = { ...filters, ...selected };
+    filters = { ...filters, date: pd.settings.last_date_filter, ...selected };
   }
 }
 
@@ -81,6 +89,13 @@ function openHistoryTab(_filters = {}, dataIndex = 25, scrollTop = 0) {
   sortedHistory = [...pd.history];
   sortedHistory.sort(compare_matches);
   setFilters(_filters);
+  totalAgg = new Aggregator({ date: filters.date });
+  if (
+    filters.arch !== Aggregator.DEFAULT_ARCH &&
+    !totalAgg.archs.includes(filters.arch)
+  ) {
+    filters.arch = Aggregator.DEFAULT_ARCH;
+  }
   filteredMatches = new Aggregator(filters);
 
   const wrap_r = createDiv(["wrapper_column", "sidebar_column_l"]);
@@ -139,7 +154,7 @@ function openHistoryTab(_filters = {}, dataIndex = 25, scrollTop = 0) {
     "history_top",
     selected => openHistoryTab(selected),
     filters,
-    getLocalState().totalAgg.events,
+    totalAgg.events,
     matchesInEvent.tags,
     matchesInPartialDeckFilters.decks,
     true,
@@ -298,8 +313,10 @@ function attachMatchData(listItem, match) {
   listItem.rightBottom.appendChild(tagsDiv);
 
   // Set tag
-  const totalAgg = getLocalState().totalAgg;
-  const allTags = [...totalAgg.archs, ...db.archetypes.map(arch => arch.name)];
+  const allTags = [
+    ...totalAgg.archs.filter(arch => arch !== NO_ARCH && arch !== DEFAULT_ARCH),
+    ...db.archetypes.map(arch => arch.name)
+  ];
   const tags = [...new Set(allTags)].map(tag => {
     const count = totalAgg.archCounts[tag] || 0;
     return { tag, q: count };
@@ -498,7 +515,7 @@ function createTag(div, matchId, tags, tag, showClose = true) {
 function addTag(matchid, tag) {
   const match = pd.match(matchid);
   if (!match || !tag) return;
-  if (tag === tagPrompt) return;
+  if ([tagPrompt, NO_ARCH, DEFAULT_ARCH].includes(tag)) return;
   if (match.tags && match.tags.includes(tag)) return;
 
   ipcSend("add_history_tag", { matchid, tag });

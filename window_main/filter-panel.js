@@ -1,4 +1,11 @@
-const { COLORS_ALL, COLORS_BRIEF } = require("../shared/constants");
+const {
+  COLORS_ALL,
+  COLORS_BRIEF,
+  DATE_LAST_30,
+  DATE_LAST_DAY,
+  DATE_ALL_TIME,
+  DATE_SEASON
+} = require("../shared/constants");
 const pd = require("../shared/player-data");
 const { createDiv } = require("../shared/dom-fns");
 const { createSelect } = require("../shared/select");
@@ -8,14 +15,12 @@ const {
   getRecentDeckName
 } = require("../shared/util");
 
-const { getTagColor } = require("./renderer-util");
+const { getTagColor, ipcSend } = require("./renderer-util");
 const {
   DEFAULT_ARCH,
   DEFAULT_DECK,
   DEFAULT_TAG,
-  DATE_LAST_30,
-  DATE_ALL_TIME,
-  DATE_SEASON,
+  NO_ARCH,
   getDefaultFilters
 } = require("./aggregator");
 
@@ -62,6 +67,7 @@ class FilterPanel {
     if (showCount && tag in this.archCounts) {
       tagString += ` (${this.archCounts[tag]})`;
     }
+    if (tag === NO_ARCH) return tagString;
     return `<div class="deck_tag" style="${style}">${tagString}</div>`;
   }
 
@@ -120,11 +126,12 @@ class FilterPanel {
     dataCont.style.display = "flex";
     const dateSelect = createSelect(
       dataCont,
-      [DATE_ALL_TIME, DATE_SEASON, DATE_LAST_30],
+      [DATE_ALL_TIME, DATE_SEASON, DATE_LAST_30, DATE_LAST_DAY],
       this.filters.date,
       filter => {
         this.filters.date = filter;
         this.onFilterChange({ date: filter }, this.filters);
+        ipcSend("save_user_settings", { last_date_filter: filter });
       },
       this.prefixId + "_query_date"
     );

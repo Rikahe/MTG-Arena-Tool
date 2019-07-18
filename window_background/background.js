@@ -1632,7 +1632,11 @@ function saveMatch(id) {
   match.playerDeck = currentMatch.player.originalDeck.getSave();
   match.oppDeck = getOppDeck();
 
-  if (match.oppDeck.archetype && match.oppDeck.archetype !== "-") {
+  if (
+    (!match.tags || !match.tags.length) &&
+    match.oppDeck.archetype &&
+    match.oppDeck.archetype !== "-"
+  ) {
     match.tags = [match.oppDeck.archetype];
   }
 

@@ -1,3 +1,31 @@
+## <small>2.8.2 (2019-07-18)</small>
+
+* add filter for no archetype set ([f7729c3](https://github.com/Manuel-777/MTG-Arena-Tool/commit/f7729c3))
+* add mastery logo to economy view ([7e92a5e](https://github.com/Manuel-777/MTG-Arena-Tool/commit/7e92a5e))
+* background handles TrackRewardTier.Updated ([d4ae224](https://github.com/Manuel-777/MTG-Arena-Tool/commit/d4ae224))
+* bugfix autocomplete should not suggest all or no archetype ([1e11d2e](https://github.com/Manuel-777/MTG-Arena-Tool/commit/1e11d2e))
+* bugfix economy page move xp to inventory txns ([07a3f6a](https://github.com/Manuel-777/MTG-Arena-Tool/commit/07a3f6a))
+* bugfix mastery track timestamps ([0b00f85](https://github.com/Manuel-777/MTG-Arena-Tool/commit/0b00f85))
+* bugfix only default match tags to oppDeck.archetype once ([fc95c52](https://github.com/Manuel-777/MTG-Arena-Tool/commit/fc95c52))
+* copy date constants into shared ([47fe739](https://github.com/Manuel-777/MTG-Arena-Tool/commit/47fe739))
+* date filter last 24 hours ([afca7ba](https://github.com/Manuel-777/MTG-Arena-Tool/commit/afca7ba))
+* economy page consistent formatPercent ([f667dd7](https://github.com/Manuel-777/MTG-Arena-Tool/commit/f667dd7))
+* economy page displays TrackRewardTier.Updated ([844d027](https://github.com/Manuel-777/MTG-Arena-Tool/commit/844d027))
+* Fix output log dialog ([5492c46](https://github.com/Manuel-777/MTG-Arena-Tool/commit/5492c46)), closes [#484](https://github.com/Manuel-777/MTG-Arena-Tool/issues/484)
+* improved context and pretty context for track progress ([779baf7](https://github.com/Manuel-777/MTG-Arena-Tool/commit/779baf7))
+* little warning ([f573d7a](https://github.com/Manuel-777/MTG-Arena-Tool/commit/f573d7a))
+* main uses and sets settings.last_date_filter ([d699b33](https://github.com/Manuel-777/MTG-Arena-Tool/commit/d699b33))
+* player-data.settings.last_date_filter ([faf1ebe](https://github.com/Manuel-777/MTG-Arena-Tool/commit/faf1ebe))
+* prettier ([dc65917](https://github.com/Manuel-777/MTG-Arena-Tool/commit/dc65917))
+* remove deprecated aggregator.createAllMatches ([b2f137e](https://github.com/Manuel-777/MTG-Arena-Tool/commit/b2f137e))
+* remove vulnerabilities ([3354e7b](https://github.com/Manuel-777/MTG-Arena-Tool/commit/3354e7b))
+* tray icons ([0495cfe](https://github.com/Manuel-777/MTG-Arena-Tool/commit/0495cfe))
+* Update background-util.js ([4398d43](https://github.com/Manuel-777/MTG-Arena-Tool/commit/4398d43))
+* Update mastery.png ([3caf416](https://github.com/Manuel-777/MTG-Arena-Tool/commit/3caf416))
+* Update README.md ([dbb94d1](https://github.com/Manuel-777/MTG-Arena-Tool/commit/dbb94d1))
+
+
+
 ## <small>2.8.1 (2019-07-09)</small>
 
 * action log share ([1eb5177](https://github.com/Manuel-777/MTG-Arena-Tool/commit/1eb5177))

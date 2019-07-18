@@ -527,8 +527,8 @@ function createChangeRow(change, economyId) {
     );
     if (lvlDelta) {
       bos = createDiv(["economy_mastery_med"]);
-      bos.title = `Mastery Level (${pd.economy.trackName})`
-     
+      bos.title = `Mastery Level (${pd.economy.trackName})`;
+
       bon = createDiv();
       bon.style.lineHeight = "64px";
       bon.classList.add("economy_sub");
