@@ -367,18 +367,26 @@ function getCardsMissingCount(deck, grpid) {
 
 //
 exports.getBoosterCountEstimate = getBoosterCountEstimate;
-function getBoosterCountEstimate(wildcards) {
+function getBoosterCountEstimate(neededWildcards) {
   let boosterCost = 0;
-  let boosterEstimates = {
+  const boosterEstimates = {
     common: 3.36,
     uncommon: 2.6,
     rare: 5.72,
     mythic: 13.24
   };
+  const ownedWildcards = {
+    common: pd.economy.wcCommon,
+    uncommon: pd.economy.wcUncommon,
+    rare: pd.economy.wcRare,
+    mythic: pd.economy.wcMythic
+  };
   for (let rarity in boosterEstimates) {
     // accept either short or long form of keys in argument
-    let shortForm = rarity[0]; // grab first letter
-    let missing = wildcards[rarity] || wildcards[shortForm] || 0;
+    const shortForm = rarity[0]; // grab first letter
+    const needed = neededWildcards[rarity] || neededWildcards[shortForm] || 0;
+    const owned = ownedWildcards[rarity] || ownedWildcards[shortForm] || 0;
+    const missing = Math.max(0, needed - owned);
     boosterCost = Math.max(boosterCost, boosterEstimates[rarity] * missing);
   }
   return Math.round(boosterCost);

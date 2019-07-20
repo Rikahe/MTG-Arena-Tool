@@ -118,7 +118,16 @@ function parseLogEntry(text, matchText, position) {
       {
         type: "label_arrow_json",
         ..._.mapValues(rematches.groups, unleakString),
-        json: () => JSON.parse(text.substr(jsonStart, jsonLen))
+        json: () => {
+          try {
+            return JSON.parse(text.substr(jsonStart, jsonLen));
+          } catch (e) {
+            console.log(e, {
+              input: rematches.input,
+              string: text.substr(jsonStart, jsonLen)
+            });
+          }
+        }
       }
     ];
   }
@@ -154,7 +163,16 @@ function parseLogEntry(text, matchText, position) {
       {
         type: "label_json",
         ..._.mapValues(rematches.groups, unleakString),
-        json: () => JSON.parse(text.substr(jsonStart, jsonLen))
+        json: () => {
+          try {
+            return JSON.parse(text.substr(jsonStart, jsonLen));
+          } catch (e) {
+            console.log(e, {
+              input: rematches.input,
+              string: text.substr(jsonStart, jsonLen)
+            });
+          }
+        }
       }
     ];
   }

@@ -536,7 +536,7 @@ span.top_nav_item_text {
     width: 40px;
     height: 40px;
     margin: auto auto auto 8px;
-    background: url(file:///C:/Users/Manuh/Desktop/MTG%20Arena%20Tool/MTG-Arena-Tool/window_main/../images/share.png);
+    background: url(../images/share.png);
     -webkit-transition: all .2s ease-in;
 }
 
