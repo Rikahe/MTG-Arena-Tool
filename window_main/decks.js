@@ -171,7 +171,7 @@ function openDecksTab(_filters = {}, scrollTop = 0) {
       if (missingWildcards[cardRarity]) {
         n++;
         wc = createDiv(["wc_explore_cost", "wc_" + cardRarity]);
-        wc.title = _.capitalize(cardRarity) + " wldcards needed.";
+        wc.title = _.capitalize(cardRarity) + " wildcards needed.";
         wc.innerHTML =
           (ownedWildcards[cardRarity] > 0
             ? ownedWildcards[cardRarity] + "/"

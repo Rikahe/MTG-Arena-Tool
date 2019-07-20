@@ -1134,6 +1134,7 @@ a:hover {
     line-height: 80px;
     height: 64px;
     text-align: center;
+    margin: auto 4px;
     background-position: center 4px;
     background-repeat: no-repeat;
 }
