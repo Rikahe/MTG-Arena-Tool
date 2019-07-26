@@ -1,3 +1,5 @@
+@import '../node_modules/pikaday/css/pikaday.css';
+
 span i {
     margin-left: 4px;
 }
@@ -74,7 +76,7 @@ relative-time, local-time {
     background-image: url(../images/logo_big.png);
 }
 
-.release_notes_link {
+.release_notes_link, .link {
     cursor: pointer;
     text-decoration: underline;
 }
@@ -1305,6 +1307,14 @@ a:hover {
     margin-right: 16px;
     height: 20px;
     background: center no-repeat url('../images/filter_multi.png');
+}
+
+.icon_search_inclusive {
+    display: -webkit-inline-box;
+    width: 20px;
+    margin-right: 16px;
+    height: 20px;
+    background: center no-repeat url('../images/create.png');
 }
 
 .wc_search_icon {
@@ -2793,7 +2803,17 @@ a:hover {
     -webkit-transition: all .2s ease-in-out;
 }
 
-.copy_button:hover {
+.open_button {
+    margin: auto 0 auto 16px;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    opacity: 0.5;
+    background: url(../images/open.png) no-repeat center;
+    -webkit-transition: all .2s ease-in-out;
+}
+
+.copy_button:hover, .open_button:hover {
     opacity: 1;
 }
 

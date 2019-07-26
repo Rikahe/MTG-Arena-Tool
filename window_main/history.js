@@ -1,7 +1,12 @@
 const anime = require("animejs");
 
 const autocomplete = require("../shared/autocomplete");
-const { MANA, RANKS, EASING_DEFAULT } = require("../shared/constants");
+const {
+  DATE_SEASON,
+  EASING_DEFAULT,
+  MANA,
+  RANKS
+} = require("../shared/constants");
 const db = require("../shared/database");
 const pd = require("../shared/player-data");
 const { createSelect } = require("../shared/select");
@@ -22,7 +27,6 @@ const ListItem = require("./list-item");
 const StatsPanel = require("./stats-panel");
 const {
   formatPercent,
-  getLocalState,
   getTagColor,
   ipcSend,
   makeResizable,
@@ -41,8 +45,7 @@ const {
   DEFAULT_ARCH,
   NO_ARCH,
   RANKED_CONST,
-  RANKED_DRAFT,
-  DATE_SEASON
+  RANKED_DRAFT
 } = Aggregator;
 let filters = Aggregator.getDefaultFilters();
 let filteredMatches;

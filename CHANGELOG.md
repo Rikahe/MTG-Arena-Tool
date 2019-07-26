@@ -1,3 +1,55 @@
+## <small>2.8.5 (2019-07-26)</small>
+
+* bugfix add new gre message regexes ([e7144fe](https://github.com/Manuel-777/MTG-Arena-Tool/commit/e7144fe))
+* bugfix force_open_settings index nums ([07bd6c9](https://github.com/Manuel-777/MTG-Arena-Tool/commit/07bd6c9))
+* bugfix handle null notifications messages ([85269bd](https://github.com/Manuel-777/MTG-Arena-Tool/commit/85269bd))
+* update PACK_SIZES with m20 ([62d6a51](https://github.com/Manuel-777/MTG-Arena-Tool/commit/62d6a51))
+
+
+
+## <small>2.8.4 (2019-07-25)</small>
+
+* add custom date since to filter panel ([053b101](https://github.com/Manuel-777/MTG-Arena-Tool/commit/053b101))
+* add pikaday module dependency ([93bd590](https://github.com/Manuel-777/MTG-Arena-Tool/commit/93bd590))
+* add pseudo-settings for logUri and log_locale_format ([3e0e7eb](https://github.com/Manuel-777/MTG-Arena-Tool/commit/3e0e7eb))
+* background-util.parseWotcTime uses settings.log_locale_format first ([0477eaa](https://github.com/Manuel-777/MTG-Arena-Tool/commit/0477eaa))
+* bugfix player_data_refresh background ([2dcf879](https://github.com/Manuel-777/MTG-Arena-Tool/commit/2dcf879))
+* bump settings tab index numbers ([95a5df6](https://github.com/Manuel-777/MTG-Arena-Tool/commit/95a5df6))
+* fix parse doc link ([a037491](https://github.com/Manuel-777/MTG-Arena-Tool/commit/a037491))
+* Friendly format checker ([1a46b8d](https://github.com/Manuel-777/MTG-Arena-Tool/commit/1a46b8d))
+* more description ([6162b0b](https://github.com/Manuel-777/MTG-Arena-Tool/commit/6162b0b))
+* move last log timestamp and format to player data ([d202c1a](https://github.com/Manuel-777/MTG-Arena-Tool/commit/d202c1a))
+* new data settings tab ([e4a4896](https://github.com/Manuel-777/MTG-Arena-Tool/commit/e4a4896))
+* open button, some alignment ([578e7bf](https://github.com/Manuel-777/MTG-Arena-Tool/commit/578e7bf))
+* renderer-util.renderLogInput ([5e1aaff](https://github.com/Manuel-777/MTG-Arena-Tool/commit/5e1aaff))
+* renderer-util.showDatepicker ([ac43143](https://github.com/Manuel-777/MTG-Arena-Tool/commit/ac43143))
+* renderer.no_log uses renderer-util.renderLogInput ([fd7cc66](https://github.com/Manuel-777/MTG-Arena-Tool/commit/fd7cc66))
+* settings display tweaks ([8ced802](https://github.com/Manuel-777/MTG-Arena-Tool/commit/8ced802))
+* settings page uses renderer-util.renderLogInput ([c27fcdc](https://github.com/Manuel-777/MTG-Arena-Tool/commit/c27fcdc))
+* settings tab index constants ([734bbee](https://github.com/Manuel-777/MTG-Arena-Tool/commit/734bbee))
+* Update package-lock.json ([ddbc940](https://github.com/Manuel-777/MTG-Arena-Tool/commit/ddbc940))
+
+
+
+## <small>2.8.3 (2019-07-21)</small>
+
+* [BUGFIX] Fixes action log share icon location reference ([1d47626](https://github.com/Manuel-777/MTG-Arena-Tool/commit/1d47626))
+* add custom sort options to decks page ([5ff7fb5](https://github.com/Manuel-777/MTG-Arena-Tool/commit/5ff7fb5))
+* add margin for deck crafting costs ([460aa0d](https://github.com/Manuel-777/MTG-Arena-Tool/commit/460aa0d))
+* bugfix booster estimate accounts for owned wildcards ([231ce36](https://github.com/Manuel-777/MTG-Arena-Tool/commit/231ce36))
+* bugfix db singleton handles filtering out bad sets ([47bab9b](https://github.com/Manuel-777/MTG-Arena-Tool/commit/47bab9b))
+* bugfix player_data_refresh background ([4060c6e](https://github.com/Manuel-777/MTG-Arena-Tool/commit/4060c6e))
+* bugfix ranked estimates on history page ([6231310](https://github.com/Manuel-777/MTG-Arena-Tool/commit/6231310))
+* filter-panel and aggregator support inclusive color matches ([413cebb](https://github.com/Manuel-777/MTG-Arena-Tool/commit/413cebb))
+* fix tray icon for osx ([73a5b62](https://github.com/Manuel-777/MTG-Arena-Tool/commit/73a5b62))
+* More detailed parse errors ([50685ce](https://github.com/Manuel-777/MTG-Arena-Tool/commit/50685ce))
+* typo fix ([2b0a80f](https://github.com/Manuel-777/MTG-Arena-Tool/commit/2b0a80f))
+* Update arena-log-decoder.js ([d0b4893](https://github.com/Manuel-777/MTG-Arena-Tool/commit/d0b4893))
+* Update database.json ([6a51ed5](https://github.com/Manuel-777/MTG-Arena-Tool/commit/6a51ed5))
+* use plus symbol instead of multicolored ([cb4a8c9](https://github.com/Manuel-777/MTG-Arena-Tool/commit/cb4a8c9))
+
+
+
 ## <small>2.8.2 (2019-07-18)</small>
 
 * add filter for no archetype set ([f7729c3](https://github.com/Manuel-777/MTG-Arena-Tool/commit/f7729c3))

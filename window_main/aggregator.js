@@ -47,6 +47,8 @@ class Aggregator {
     this.updateFilters = this.updateFilters.bind(this);
     this._processMatch = this._processMatch.bind(this);
     this.compareDecks = this.compareDecks.bind(this);
+    this.compareDecksByWins = this.compareDecksByWins.bind(this);
+    this.compareDecksByWinrates = this.compareDecksByWinrates.bind(this);
     this.compareEvents = this.compareEvents.bind(this);
     this.updateFilters(filters);
   }
@@ -67,7 +69,7 @@ class Aggregator {
   static getDefaultColorFilter() {
     const colorFilters = {};
     COLORS_BRIEF.forEach(code => (colorFilters[code] = false));
-    return { ...colorFilters };
+    return { ...colorFilters, multi: true };
   }
 
   static getDefaultFilters() {
@@ -80,7 +82,8 @@ class Aggregator {
       arch: DEFAULT_ARCH,
       oppColors: Aggregator.getDefaultColorFilter(),
       date: pd.settings.last_date_filter,
-      showArchived: false
+      showArchived: false,
+      sort: "By Date"
     };
   }
 
@@ -142,23 +145,21 @@ class Aggregator {
   _filterDeckByColors(deck, _colors) {
     if (!deck) return true;
 
-    // All decks pass when no colors are selected
-    if (Object.values(_colors).every(val => val === false)) return true;
-
     // Normalize deck colors into matching data format
-    let deckColorCodes = Aggregator.getDefaultColorFilter();
+    const deckColorCodes = Aggregator.getDefaultColorFilter();
     if (deck.colors instanceof Array) {
       deck.colors.forEach(i => (deckColorCodes[COLORS_ALL[i - 1]] = true));
     } else if (deck.colors instanceof Object) {
-      deckColorCodes = deck.colors;
+      Object.assign(deckColorCodes, deck.colors);
     }
 
-    // If at least one color is selected, deck must match exactly
-    for (const code in _colors) {
-      if (_colors[code] !== deckColorCodes[code]) return false;
-    }
-
-    return true;
+    return Object.entries(_colors).every(([color, value]) => {
+      if (color === "multi") return true;
+      if (!_colors.multi || value) {
+        return deckColorCodes[color] === value;
+      }
+      return true;
+    });
   }
 
   filterDeck(deck) {
@@ -226,7 +227,8 @@ class Aggregator {
 
     if (
       match.type === "draft" &&
-      (arch !== DEFAULT_ARCH || Object.values(oppColors).some(color => color))
+      (arch !== DEFAULT_ARCH ||
+        (Object.values(oppColors).some(color => color) && !oppColors.multi))
     )
       return false;
 
@@ -432,6 +434,48 @@ class Aggregator {
     if (bName) return 1;
     // neither valid, leave in place
     return 0;
+  }
+
+  compareDecksByWins(a, b) {
+    const aStats = {
+      ...Aggregator.getDefaultStats(),
+      winrate: 0,
+      ...this.deckStats[a.id]
+    };
+    const bStats = {
+      ...Aggregator.getDefaultStats(),
+      winrate: 0,
+      ...this.deckStats[b.id]
+    };
+    const aName = getRecentDeckName(a.id);
+    const bName = getRecentDeckName(b.id);
+
+    return (
+      bStats.wins - aStats.wins ||
+      bStats.winrate - aStats.winrate ||
+      aName.localeCompare(bName)
+    );
+  }
+
+  compareDecksByWinrates(a, b) {
+    const aStats = {
+      ...Aggregator.getDefaultStats(),
+      winrate: 0,
+      ...this.deckStats[a.id]
+    };
+    const bStats = {
+      ...Aggregator.getDefaultStats(),
+      winrate: 0,
+      ...this.deckStats[b.id]
+    };
+    const aName = getRecentDeckName(a.id);
+    const bName = getRecentDeckName(b.id);
+
+    return (
+      bStats.winrate - aStats.winrate ||
+      bStats.wins - aStats.wins ||
+      aName.localeCompare(bName)
+    );
   }
 
   compareEvents(a, b) {

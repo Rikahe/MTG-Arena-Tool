@@ -1,5 +1,6 @@
 const { ipcRenderer: ipc } = require("electron");
 const fs = require("fs");
+const _ = require("lodash");
 
 // Some other things should go here later, like updating from MTGA Servers themselves.
 class Database {
@@ -108,7 +109,10 @@ class Database {
   }
 
   get sets() {
-    return this.data.sets;
+    return _.pickBy(
+      this.data.sets,
+      (set, setName) => set && setName && set.code
+    );
   }
 
   card(id) {

@@ -7,15 +7,16 @@ const {
   DATE_SEASON
 } = require("../shared/constants");
 const pd = require("../shared/player-data");
-const { createDiv } = require("../shared/dom-fns");
+const { createDiv, createLabel } = require("../shared/dom-fns");
 const { createSelect } = require("../shared/select");
 const {
   getReadableEvent,
   getReadableFormat,
-  getRecentDeckName
+  getRecentDeckName,
+  timeSince
 } = require("../shared/util");
 
-const { getTagColor, ipcSend } = require("./renderer-util");
+const { getTagColor, ipcSend, showDatepicker } = require("./renderer-util");
 const {
   DEFAULT_ARCH,
   DEFAULT_DECK,
@@ -36,7 +37,8 @@ class FilterPanel {
     archs,
     showOppManaFilter,
     archCounts,
-    showArchivedFilter
+    showArchivedFilter,
+    showSortOption
   ) {
     this.prefixId = prefixId;
     this.onFilterChange = onFilterChange;
@@ -52,6 +54,7 @@ class FilterPanel {
     this.showOppManaFilter = showOppManaFilter || false;
     this.archCounts = archCounts || {};
     this.showArchivedFilter = showArchivedFilter || false;
+    this.showSortOption = showSortOption || false;
     this.getTagString = this.getTagString.bind(this);
     this.getDeckString = this.getDeckString.bind(this);
     return this;
@@ -123,15 +126,39 @@ class FilterPanel {
 
     const dataCont = createDiv([]);
 
+    const dateOptions = [
+      DATE_ALL_TIME,
+      DATE_SEASON,
+      DATE_LAST_30,
+      DATE_LAST_DAY,
+      "Custom"
+    ];
+    let dateSelected = this.filters.date;
+    if (this.filters.date && !dateOptions.includes(this.filters.date)) {
+      const prettyDate = `Since ${new Date(this.filters.date).toDateString()}`;
+      dateOptions.unshift(prettyDate);
+      dateSelected = prettyDate;
+    }
+
     dataCont.style.display = "flex";
     const dateSelect = createSelect(
       dataCont,
-      [DATE_ALL_TIME, DATE_SEASON, DATE_LAST_30, DATE_LAST_DAY],
-      this.filters.date,
+      dateOptions,
+      dateSelected,
       filter => {
-        this.filters.date = filter;
-        this.onFilterChange({ date: filter }, this.filters);
-        ipcSend("save_user_settings", { last_date_filter: filter });
+        if (filter === "Custom") {
+          const lastWeek = new Date();
+          lastWeek.setDate(new Date().getDate() - 7);
+          showDatepicker(lastWeek, date => {
+            const filter = date.toISOString();
+            this.onFilterChange({ date: filter }, this.filters);
+            ipcSend("save_user_settings", { last_date_filter: filter });
+          });
+        } else {
+          this.filters.date = filter;
+          this.onFilterChange({ date: filter }, this.filters);
+          ipcSend("save_user_settings", { last_date_filter: filter });
+        }
       },
       this.prefixId + "_query_date"
     );
@@ -175,6 +202,66 @@ class FilterPanel {
       eventSelect.style.marginBottom = "8px";
     }
     container.appendChild(columnA);
+
+    const filterLabels = {
+      w: "White",
+      u: "Blue",
+      b: "Black",
+      r: "Red",
+      g: "Green",
+      multi: "Allow unselected colors"
+    };
+    const renderManaFilter = (filterKey, cont) => {
+      const colors = this.filters[filterKey];
+      const manas = createDiv([this.prefixId + "_query_mana"]);
+      manas.style.display = "flex";
+      manas.style.margin = "8px";
+      manas.style.width = "150px";
+      manas.style.height = "32px";
+      COLORS_BRIEF.forEach(code => {
+        const filterClasses = ["mana_filter"];
+        if (!colors[code]) {
+          filterClasses.push("mana_filter_on");
+        }
+        const manabutton = createDiv(filterClasses, "", {
+          title: filterLabels[code]
+        });
+        manabutton.style.backgroundImage = `url(../images/${code}20.png)`;
+        manabutton.style.width = "30px";
+        manabutton.addEventListener("click", () => {
+          if (manabutton.classList.contains("mana_filter_on")) {
+            manabutton.classList.remove("mana_filter_on");
+            colors[code] = true;
+          } else {
+            manabutton.classList.add("mana_filter_on");
+            colors[code] = false;
+          }
+          this.onFilterChange({ [filterKey]: colors }, this.filters);
+        });
+        manas.appendChild(manabutton);
+      });
+      const code = "multi";
+      const filterClasses = ["mana_filter", "icon_search_inclusive"];
+      if (!colors[code]) {
+        filterClasses.push("mana_filter_on");
+      }
+      const manabutton = createDiv(filterClasses, "", {
+        title: filterLabels[code]
+      });
+      manabutton.style.width = "30px";
+      manabutton.addEventListener("click", () => {
+        if (manabutton.classList.contains("mana_filter_on")) {
+          manabutton.classList.remove("mana_filter_on");
+          colors[code] = true;
+        } else {
+          manabutton.classList.add("mana_filter_on");
+          colors[code] = false;
+        }
+        this.onFilterChange({ [filterKey]: colors }, this.filters);
+      });
+      manas.appendChild(manabutton);
+      cont.appendChild(manas);
+    };
 
     const showColumnB = this.tags.length || this.showManaFilter;
     if (showColumnB) {
@@ -225,33 +312,7 @@ class FilterPanel {
       }
 
       if (this.showManaFilter) {
-        const manas = createDiv([this.prefixId + "_query_mana"]);
-        manas.style.display = "flex";
-        manas.style.margin = "8px";
-        manas.style.width = "150px";
-        manas.style.height = "32px";
-        COLORS_BRIEF.forEach(code => {
-          const filterClasses = ["mana_filter"];
-          if (!this.filters.colors[code]) {
-            filterClasses.push("mana_filter_on");
-          }
-          var manabutton = createDiv(filterClasses);
-          manabutton.style.backgroundImage = `url(../images/${code}20.png)`;
-          manabutton.style.width = "30px";
-          manabutton.addEventListener("click", () => {
-            if (manabutton.classList.contains("mana_filter_on")) {
-              manabutton.classList.remove("mana_filter_on");
-              this.filters.colors[code] = true;
-            } else {
-              manabutton.classList.add("mana_filter_on");
-              this.filters.colors[code] = false;
-            }
-            const colors = this.filters.colors;
-            this.onFilterChange({ colors }, this.filters);
-          });
-          manas.appendChild(manabutton);
-        });
-        columnB.appendChild(manas);
+        renderManaFilter("colors", columnB);
       }
       container.appendChild(columnB);
     }
@@ -277,34 +338,35 @@ class FilterPanel {
       }
 
       if (this.showOppManaFilter) {
-        const manas = createDiv([this.prefixId + "_query_mana"]);
-        manas.style.display = "flex";
-        manas.style.margin = "8px";
-        manas.style.width = "150px";
-        manas.style.height = "32px";
-        COLORS_BRIEF.forEach(code => {
-          const filterClasses = ["mana_filter"];
-          if (!this.filters.oppColors[code]) {
-            filterClasses.push("mana_filter_on");
-          }
-          var manabutton = createDiv(filterClasses);
-          manabutton.style.backgroundImage = `url(../images/${code}20.png)`;
-          manabutton.style.width = "30px";
-          manabutton.addEventListener("click", () => {
-            if (manabutton.classList.contains("mana_filter_on")) {
-              manabutton.classList.remove("mana_filter_on");
-              this.filters.oppColors[code] = true;
-            } else {
-              manabutton.classList.add("mana_filter_on");
-              this.filters.oppColors[code] = false;
-            }
-            const oppColors = this.filters.oppColors;
-            this.onFilterChange({ oppColors }, this.filters);
-          });
-          manas.appendChild(manabutton);
-        });
-        columnC.appendChild(manas);
+        renderManaFilter("oppColors", columnC);
       }
+      container.appendChild(columnC);
+    } else if (this.showSortOption) {
+      const columnC = createDiv([]);
+
+      const sortDiv = createDiv([]);
+      sortDiv.style.display = "flex";
+      const sortLabel = createLabel([], "Sort");
+      sortLabel.style.marginTop = "7px";
+      sortDiv.appendChild(sortLabel);
+      const sortSelect = createSelect(
+        sortDiv,
+        ["By Date", "By Wins", "By Winrate"],
+        this.filters.sort,
+        filter => {
+          this.filters.sort = filter;
+          this.onFilterChange({ sort: filter }, this.filters);
+        },
+        this.prefixId + "_query_sort"
+      );
+      sortSelect.style.width = "150px";
+      sortSelect.style.marginBottom = "8px";
+      columnC.appendChild(sortDiv);
+
+      const spacer = createDiv(["select_container"]);
+      spacer.style.marginBottom = "8px";
+      columnC.appendChild(spacer);
+
       container.appendChild(columnC);
     } else {
       // spacer

@@ -57,7 +57,8 @@ function get_collection_export(exportFormat) {
       );
 
       add = add.replace("$SetName", card.set);
-      add = add.replace("$SetCode", db.sets[card.set].code);
+      if (card.set in db.sets)
+        add = add.replace("$SetCode", db.sets[card.set].code);
       add = add.replace("$Collector", card.cid);
       add = add.replace("$Rarity", card.rarity);
       add = add.replace("$Type", card.type);
@@ -168,15 +169,13 @@ function get_collection_stats() {
   const stats = {
     complete: new SetStats("complete")
   };
-
-  for (var set in db.sets) {
-    if (set !== "") {
-      stats[set] = new SetStats(set);
-    }
-  }
+  Object.keys(db.sets).forEach(
+    setName => (stats[setName] = new SetStats(setName))
+  );
 
   db.cardList.forEach(card => {
     if (!card.collectible || card.rarity === "land") return;
+    if (!(card.set in stats)) return;
     // add to totals
     stats[card.set][card.rarity].total += 4;
     stats.complete[card.rarity].total += 4;
@@ -219,18 +218,10 @@ function get_collection_stats() {
 function openCollectionTab() {
   filteredSets = [];
   filteredMana = [];
-  orderedSets = [];
-  for (let set in db.sets) {
-    if (set !== "") {
-      orderedSets.push(set);
-    }
-  }
-
-  orderedSets.sort((a, b) => {
-    if (a.release < b.release) return 1;
-    if (a.release > b.release) return -1;
-    return 0;
-  });
+  orderedSets = Object.keys(db.sets);
+  orderedSets.sort(
+    (a, b) => new Date(db.sets[a].release) - new Date(db.sets[b].release)
+  );
 
   hideLoadingBars();
   let mainDiv;
@@ -652,7 +643,6 @@ function printStats() {
   orderedSets
     .slice()
     .reverse()
-    .filter(set => set !== "")
     .forEach(set => {
       let rs = renderSetStats(stats[set], db.sets[set].code, set);
       mainstats.appendChild(rs);
@@ -1110,6 +1100,7 @@ function printCards() {
 }
 
 function addCardMenu(div, card) {
+  if (!(card.set in db.sets)) return;
   let arenaCode = `1 ${card.name} (${db.sets[card.set].arenacode}) ${card.cid}`;
   div.addEventListener(
     "contextmenu",

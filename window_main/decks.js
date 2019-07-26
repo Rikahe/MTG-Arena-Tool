@@ -52,7 +52,6 @@ function setFilters(selected = {}) {
 //
 function openDecksTab(_filters = {}, scrollTop = 0) {
   hideLoadingBars();
-  const ls = getLocalState();
   const mainDiv = resetMainContainer();
   mainDiv.classList.add("flex_item");
   setFilters(_filters);
@@ -103,13 +102,20 @@ function openDecksTab(_filters = {}, scrollTop = 0) {
     [],
     false,
     null,
+    true,
     true
   );
   decksTop.appendChild(filterPanel.render());
   wrap_l.appendChild(decksTop);
 
   const decks = [...pd.deckList];
-  decks.sort(aggregator.compareDecks);
+  if (filters.sort === "By Winrate") {
+    decks.sort(aggregator.compareDecksByWinrates);
+  } else if (filters.sort === "By Wins") {
+    decks.sort(aggregator.compareDecksByWins);
+  } else {
+    decks.sort(aggregator.compareDecks);
+  }
 
   const isDeckVisible = deck =>
     aggregator.filterDeck(deck) &&
